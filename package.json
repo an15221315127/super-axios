@@ -1,0 +1,41 @@
+{
+  "name": "super-axios",
+  "version": "1.1.8",
+  "description": "一款基于axios二次封装的断线重连，防抖提交，节流请求，自动取消等功能，是一个很强大的库～",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/an15221315127/super-axios.git"
+  },
+  "homepage": "https://github.com/an15221315127/super-axios.git",
+  "bugs": {
+    "email": "2890815038@qq.com"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "ts-loader": "^9.2.4",
+    "typescript": "^4.3.5",
+    "webpack": "^5.47.1",
+    "webpack-cli": "^4.7.2"
+  },
+  "types": "./types/index.d.ts",
+  "scripts": {
+    "build": "webpack build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "http",
+    "axios",
+    "super-axios",
+    "xhr",
+    "防抖提交",
+    "断线重连",
+    "节流",
+    "自动取消"
+  ],
+  "author": "anguodong",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}

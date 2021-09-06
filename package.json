@@ -1,6 +1,6 @@
 {
   "name": "super-axios",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "一款基于axios二次封装的断线重连，防抖提交，节流请求，自动取消等功能，是一个很强大的库～",
   "main": "lib/index.js",
   "repository": {

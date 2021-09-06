@@ -7,7 +7,7 @@ import {
     AxiosResponse,
     Canceler, Method
 } from "../types/axios"
-import {AutoWorker, Extension, Manager, ManagerConfig, Request} from "../types/index";
+import {AutoWorker, Extension, Manager, ManagerConfig, Request} from "../types";
 
 
 const cancelToken = axios.CancelToken

@@ -5,11 +5,11 @@ class AxiosManager<V = any> {
     /**
      * 请求队列
      */
-    static requesting: Request[]
+    static requesting: Map<string,Request>
     /**
      * 需要防止重复的请求队列
      */
-    static shakeQueue: Request[]
+    static shakeQueue:  Map<string,Request>
     /**
      *断线重连时间间隔
      */
@@ -145,6 +145,7 @@ export interface ManagerConfig<V = any> {
     delay?: boolean,
     Http: AxiosInstance
     requester?: Request
+
 }
 
 
@@ -172,7 +173,7 @@ export interface Manager {
 
 export interface AutoWorker {
     autoAttempt: boolean,
-    attemptQueue: Request[]
+    attemptMap: Map<string,Request>
 }
 
 

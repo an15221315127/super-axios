@@ -6,7 +6,7 @@ import {
     AxiosRequestConfig,
     AxiosResponse,
     Canceler, Method
-} from "../types/axios"
+} from "../types"
 import {AutoWorker, Extension, Manager, ManagerConfig, Request} from "../types";
 
 

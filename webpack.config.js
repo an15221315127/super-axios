@@ -1,7 +1,7 @@
 const path = require('path');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
-const UMD = {
+const config = {
     entry: './src/index.ts',
     mode: 'production',
     module: {
@@ -33,4 +33,4 @@ const UMD = {
     plugins: [new CleanWebpackPlugin()]
 };
 
-module.exports = [UMD];
+module.exports = config;

@@ -1,8 +1,8 @@
 {
   "name": "super-axios",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "一款基于axios二次封装的断线重连，防抖提交，节流请求，自动取消等功能，是一个很强大的库～",
-  "main": "lib/index.js",
+  "main": "lib/super-axios.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/an15221315127/super-axios.git"
@@ -12,9 +12,13 @@
     "email": "2890815038@qq.com"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@types/uglifyjs-webpack-plugin": "^1.1.0",
+    "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "ts-loader": "^9.2.4",
     "typescript": "^4.3.5",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^5.47.1",
     "webpack-cli": "^4.7.2"
   },

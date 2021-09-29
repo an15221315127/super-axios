@@ -1,20 +1,26 @@
 const path = require('path');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
-
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const config = {
-    entry: './src/index.ts',
-    mode: 'production',
+    entry: {
+        'super-axios': [path.resolve("src/index.ts")],
+        'super-axios.min': [path.resolve("src/index.ts")]
+    },
     module: {
         rules: [
             {
-                test: /\.ts?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
+                test: /\.js$/,
+                use: [{
+                    loader: "babel-loader",
+                }],
+                exclude: /node_modules/,
             },
             {
-                test: /\.js$/,
-                use: 'babel-loader',
-                exclude: /node_modules/
+                loader: "ts-loader",
+                options: {
+                    appendTsxSuffixTo: [/\.vue$/],
+                    transpileOnly: true
+                }
             }
         ]
     },
@@ -22,13 +28,22 @@ const config = {
         extensions: ['.ts', '.js']
     },
     output: {
-        filename: 'index.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'lib'),
-        library: 'demo', // 以库的形式导出入口文件
-        libraryTarget: 'umd' // 以库的形式导出入口文件时，输出的类型,这里是通过umd的方式来暴露library,适用于使用方import的方式导入npm包
+        library: "super-axios",
+        libraryTarget: 'umd',
+        umdNamedDefine: true,
     },
     optimization: {
-        minimize: true
+        minimize: true,
+        minimizer: [
+            new UglifyJsPlugin({
+                include: /\.min\.js$/i
+            }),
+
+        ],
+        splitChunks: false,
+        runtimeChunk: false
     },
     plugins: [new CleanWebpackPlugin()]
 };

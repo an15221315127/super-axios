@@ -14,82 +14,82 @@ class AxiosManager<V = any> {
     /**
      * 请求队列
      */
-    static cancelMap: Map<string, Context>
+    cancelMap: Map<string, Context>
     /**
      * 需要防止重复的请求队列
      */
-    static shakeQueue: Map<string, Context>
-    static tryingMap: Map<string, Context>
+    shakeQueue: Map<string, Context>
+    tryingMap: Map<string, Context>
     /**
      *断线重连时间间隔
      */
-    static timeStep: number
+    timeStep: number
     /**
      * 自动尝试重连
      */
-    static autoAttempt: boolean
+    autoAttempt: boolean
 
     /**
      * 最大重连数
      */
-    static maxReconnectionTimes: number
+    maxReconnectionTimes: number
     /**
      * 延时时间
      */
-    static delayTime: number
+    delayTime: number
     /**
      * 请求拦截器
      * @param config
      */
-    static request: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<V>
+    request: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<V>
 
     /**
      *  响应拦截器
      * @param value
      */
-    static response: (value: V) => V | Promise<V>
+    response: (value: V) => V | Promise<V>
     /**
      * 开始尝试重连
      */
-    static tryBegin: () => void
+    tryBegin: () => void
     /**
      * 重连成功的回调
      */
-    static trySuccess: () => void
+    trySuccess: () => void
     /**
      * 重连成功的回调
      */
-    static tryFail: () => void
+    tryFail: () => void
 
     /**
      *延时器对象
      */
-    static Timer?: NodeJS.Timeout
+    Timer?: NodeJS.Timeout
     /**
      * Axios实例
      */
-    private Http: AxiosInstance
+    Http: AxiosInstance
 
     /**
      *  取消请求回调方法
      */
-    private cancel: Canceler
+    cancel: Canceler
     /**
      * 是否延时
      */
-    private delay: boolean
+    delay: boolean
     /**
      * 是否需要自动取消
      */
-    private needCancel: boolean
+    needCancel: boolean
     /**
      * 是否需要防抖
      */
-    private shake: boolean
+    shake: boolean
     /**
      *  当前请求上下文
      */
-    private context: Context
+    context: Context
 
 
     /**
@@ -150,20 +150,17 @@ class AxiosManager<V = any> {
     dispatch: (q: Context) => Promise<AxiosPromise>
 }
 
-export interface ManagerConfig<V = any> {
-    cancel: Canceler | null,// 可手动取消axios请求的回调方法
-    shake: boolean,
-    needCancel: boolean,
-    delay?: boolean,
-    Http: AxiosInstance
-    context?: Context
-
-}
 
 
-export interface Extension<V = any> {
-    request: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<AxiosPromise>
-    response: (value: AxiosResponse) => any | Promise<AxiosPromise>
+
+export interface Extension<T = any> {
+    trySuccess?: () => void // 重连成功的回调
+    tryFail?: () => void// 重连失败的回调
+    tryBegin?: () => void // 开始尝试重连
+    maxReconnectionTimes?: number; // 最大重连数
+    timeStep?: number; // 断线重连时间间隔
+    request: undefined | ((config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<T>))
+    response: undefined | ((res: any) => any | AxiosError<any>)
 }
 
 export interface Context extends AxiosRequestConfig {

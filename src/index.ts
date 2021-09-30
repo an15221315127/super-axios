@@ -98,7 +98,6 @@ class AxiosManager<T = any> {
             return config
         }, (error: AxiosError) => {  // 当发生错误时，执行该部分代码
             const { url, method } = error.config
-            console.log(error.config, '-----')
             const { needCancel, shake } = this
             // 清除防抖
             if (shake) {

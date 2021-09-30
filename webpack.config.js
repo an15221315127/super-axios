@@ -3,8 +3,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const config = {
     entry: {
-        'super-axios': [path.resolve("src/index.ts")],
-        'super-axios.min': [path.resolve("src/index.ts")]
+        'index': [path.resolve("src/index.ts")],
+        'index.min': [path.resolve("src/index.ts")]
     },
     module: {
         rules: [

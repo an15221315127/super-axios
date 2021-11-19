@@ -315,7 +315,7 @@ class AxiosManager<T = any> {
         }
         // 提交请求
         const res = await this.Http({ url, method, data, params, headers: { ...this.Http.defaults.headers, ...headers } })
-        return res.statusText && res.status ? res.data : res
+        return res?.data ?? res
     }
 
 

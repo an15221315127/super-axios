@@ -20,9 +20,6 @@ const service = new AxiosManager(
     withCredentials: false,
   },
   {
-    trySuccess: () => {}, // 重连成功的回调
-    tryFail: () => {}, // 重连失败的回调
-    tryBegin: () => {}, // 开始尝试重连
     maxReconnectionTimes: 5, // 最大重连数
     timeStep: 1000, // 断线重连时间间隔
     request: (config: AxiosRequestConfig) => {
@@ -35,6 +32,16 @@ const service = new AxiosManager(
     },
   }
 );
+AxiosManager.trySuccess = function(){
+
+ } // 重连成功的回调
+AxiosManager.tryFail = function(){
+   
+ } // 重连失败的回调
+AxiosManager.tryBegin = function(){
+   
+ } // 开始尝试重连
+
 
 export default service;
 /***

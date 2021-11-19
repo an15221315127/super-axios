@@ -32,15 +32,16 @@ const service = new AxiosManager(
     },
   }
 );
+AxiosManager.tryBegin = function(){
+   
+ } // 开始尝试重连
 AxiosManager.trySuccess = function(){
 
  } // 重连成功的回调
 AxiosManager.tryFail = function(){
    
  } // 重连失败的回调
-AxiosManager.tryBegin = function(){
-   
- } // 开始尝试重连
+
 
 
 export default service;

@@ -108,7 +108,7 @@ class AxiosManager {
      * @param headers
      * @param c
      */
-    get<Q, D, E>(url: string, params: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+    get<Q, D>(url: string, params: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
 
     /**
      * post
@@ -117,7 +117,7 @@ class AxiosManager {
      * @param headers
      * @param c
      */
-    post<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+    post<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
 
     /**
      * delete
@@ -126,7 +126,7 @@ class AxiosManager {
      * @param headers
      * @param c
      */
-    put<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+    put<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
 
     /**
      * put
@@ -135,7 +135,7 @@ class AxiosManager {
      * @param headers
      * @param c
      */
-    delete<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+    delete<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
 
     /**
      * patch
@@ -144,13 +144,13 @@ class AxiosManager {
      * @param headers
      * @param c
      */
-    patch<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+    patch<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
 
     /**
      * 发起axios请求
      * @param q
      */
-    dispatch<D, E>(context: Context): Promise<D | E>
+    dispatch<D>(context: Context): Promise<D>
 }
 
 
@@ -180,6 +180,5 @@ export interface Manager {
     delay?: boolean,
     delayTime?: number
 }
-
 
 export default AxiosManager

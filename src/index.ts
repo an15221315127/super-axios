@@ -2,7 +2,6 @@ import axios from "axios"
 import {
     AxiosError,
     AxiosInstance,
-    AxiosPromise,
     AxiosRequestConfig,
     AxiosResponse,
     Canceler,
@@ -14,21 +13,25 @@ import {
 
 
 
-
 const cancelToken = axios.CancelToken
 
-class AxiosManager<T = any> {
+/***
+ * Q 为请求参数
+ * D 返回值
+ * E 错误接受体
+ */
+class AxiosManager {
     cancelMap: Map<string, Context> = new Map() // 请求队列
     shakeMap: Map<string, Context> = new Map() // 防抖的请求队列
     tryingMap: Map<string, Context> = new Map() // 重连队列
     timeStep = 1000; // 断线重连时间间隔
     maxReconnectionTimes = 5; // 最大重连数
     delayTime = 500; // 延时时间
-    request: undefined | ((config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<T>))
-    response: undefined | ((res: any) => any | AxiosError<any>)
-    trySuccess: () => void = () => { } // 重连成功的回调
-    tryFail: () => void = () => { }// 重连失败的回调
-    tryBegin: () => void = () => { } // 开始尝试重连
+    request?: (<E>(config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<E>))
+    response?: (<D, E>(res: D) => D | AxiosError<E>)
+    trySuccess?: () => void// 重连成功的回调
+    tryFail?: () => void// 重连失败的回调
+    tryBegin?: () => void // 开始尝试重连
     Timer?: NodeJS.Timeout // 延时器对象
 
     Http: AxiosInstance; // axios实例
@@ -44,30 +47,27 @@ class AxiosManager<T = any> {
             return this.Timer = setTimeout(resolve, ms)
         });
     }
-
-
     // 初始化axios
     constructor(axiosConfig: AxiosRequestConfig, {
         maxReconnectionTimes = 5,
         timeStep = 1000,
-        tryBegin = () => { },
-        tryFail = () => { },
-        trySuccess = () => { },
-        request = undefined,
-        response = undefined,
+        tryBegin = () => {
+        },
+        tryFail = () => {
+        },
+        trySuccess = () => {
+        },
     }: Extension) {
         this.maxReconnectionTimes = maxReconnectionTimes
         this.timeStep = timeStep
         this.tryBegin = tryBegin
         this.tryFail = tryFail
         this.trySuccess = trySuccess
-        this.request = request
-        this.response = response
         this.Http = axios.create(axiosConfig)
         // axios请求过滤
         this.Http.interceptors.request.use(async (config: AxiosRequestConfig) => {
-            const { url, method, data, params }: AxiosRequestConfig = config
-            const { needCancel, shake } = this
+            const {url, method, data, params}: AxiosRequestConfig = config
+            const {needCancel, shake} = this
             const that = this
             // 需要观察自动取消的队列
             if (needCancel) {
@@ -97,8 +97,8 @@ class AxiosManager<T = any> {
 
             return config
         }, (error: AxiosError) => {  // 当发生错误时，执行该部分代码
-            const { url, method } = error.config
-            const { needCancel, shake } = this
+            const {url, method} = error.config
+            const {needCancel, shake} = this
             // 清除防抖
             if (shake) {
                 this.shakeMap.delete(this.getKey(url, method))
@@ -109,9 +109,9 @@ class AxiosManager<T = any> {
             }
         })
         // 相应拦截器
-        this.Http.interceptors.response.use((res: AxiosResponse) => {
-            const { shake, needCancel } = this
-            const { url, method }: AxiosRequestConfig = res.config
+        this.Http.interceptors.response.use(<D, E>(res: AxiosResponse<D>): D | AxiosError<E> => {
+            const {shake, needCancel} = this
+            const {url, method}: AxiosRequestConfig = res.config
             // 清除防抖
             if (shake) {
                 this.shakeMap.delete(this.getKey(url, method))
@@ -143,9 +143,9 @@ class AxiosManager<T = any> {
 
             // @ts-ignore
             return Promise.reject(res.toString())
-        }, (error: AxiosError) => {
-            const { shake, needCancel } = this
-            const { url, method, } = error.config
+        }, <E>(error: AxiosError<E>) => {
+            const {shake, needCancel} = this
+            const {url, method,} = error.config
             if (shake) {
                 this.shakeMap.delete(this.getKey(url, method))
             }
@@ -193,8 +193,8 @@ class AxiosManager<T = any> {
             }
             if (error.message.search('timeout') > -1) {
 
-                const { maxReconnectionTimes, tryingMap } = this;
-                const { url, method, data, params } = error.config
+                const {maxReconnectionTimes, tryingMap} = this;
+                const {url, method, data, params} = error.config
                 let request = tryingMap.get(this.getKey(url, method))
                 if (request) {
                     if (request.autoCounts && maxReconnectionTimes > request.autoCounts) {
@@ -237,7 +237,7 @@ class AxiosManager<T = any> {
         });
     }
 
-    get(url: string, params: any, c?: Manager, headers?: any) {
+    get<Q, D, E>(url: string, params: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E> {
         return this.dispatch({
             params,
             url,
@@ -247,7 +247,7 @@ class AxiosManager<T = any> {
         })
     }
 
-    post(url: string, data: any, c?: Manager, headers?: any) {
+    post<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E> {
         return this.dispatch({
             data,
             url,
@@ -257,7 +257,7 @@ class AxiosManager<T = any> {
         })
     }
 
-    put(url: string, data: any, c?: Manager, headers?: any) {
+    put<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E> {
         return this.dispatch({
             data,
             url,
@@ -267,7 +267,7 @@ class AxiosManager<T = any> {
         })
     }
 
-    delete(url: string, data: any, c?: Manager, headers?: any) {
+    delete<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E> {
         return this.dispatch({
             data,
             url,
@@ -277,7 +277,7 @@ class AxiosManager<T = any> {
         })
     }
 
-    patch(url: string, data: any, c?: Manager, headers?: any) {
+    patch<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E> {
         return this.dispatch({
             data,
             url,
@@ -287,15 +287,14 @@ class AxiosManager<T = any> {
         })
     }
 
-    // @ts-ignore
-    async dispatch(context: Context): Promise<AxiosPromise> {
+    private async dispatch<D, E>(context: Context): Promise<D | E> {
         // 保存当前请求上下文
         this.context = context
-        const { url, method, data, params, headers, delayTime, delay, shake, needCancel } = context
+        const {url, method, data, params, headers, delayTime, delay, shake, needCancel} = context
         this.delay = delay ?? false
         this.shake = shake ?? false
         this.needCancel = needCancel ?? false
-        const { shakeMap, cancelMap } = this
+        const {shakeMap, cancelMap} = this
         // 是否需要取消上一次的请求
         if (needCancel && cancelMap.has(this.getKey(url, method))) {
             let it = cancelMap.get(this.getKey(url, method))
@@ -314,16 +313,27 @@ class AxiosManager<T = any> {
             return Promise.reject("请勿重复提交")
         }
         // 提交请求
-        const res = await this.Http({ url, method, data, params, headers: { ...this.Http.defaults.headers, ...headers } })
-        return res?.data ?? res
+        try {
+            const res = await this.Http({
+                url,
+                method,
+                data,
+                params,
+                headers: {...this.Http.defaults.headers, ...headers}
+            })
+            return res?.data ?? res
+        } catch (e: any) {
+            return e
+        }
+
     }
 
 
     private getKey(url?: string, method?: Method): string {
+
         return `url=${url}method=${method}`
     }
 
 }
-
 
 export default AxiosManager;

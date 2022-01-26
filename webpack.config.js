@@ -6,6 +6,7 @@ const config = {
         'index': [path.resolve("src/index.ts")],
         'index.min': [path.resolve("src/index.ts")]
     },
+    mode: "production",
     module: {
         rules: [
             {

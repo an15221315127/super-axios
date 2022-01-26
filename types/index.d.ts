@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, Canceler, Method, AxiosPromise } from "axios"
+import {AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, Canceler, Method, AxiosPromise} from "axios"
 
 
 export {
@@ -10,7 +10,8 @@ export {
     Method,
     AxiosPromise
 }
-class AxiosManager<V = any> {
+
+class AxiosManager {
     /**
      * 请求队列
      */
@@ -41,13 +42,14 @@ class AxiosManager<V = any> {
      * 请求拦截器
      * @param config
      */
-    request: (config: AxiosRequestConfig) => AxiosRequestConfig | Promise<V>
+    request?: (<E>(config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<E>))
+
 
     /**
      *  响应拦截器
      * @param value
      */
-    response: (value: V) => V | Promise<V>
+    response?: (<D, E>(res: D) => D | AxiosError<E>)
     /**
      * 开始尝试重连
      */
@@ -103,6 +105,7 @@ class AxiosManager<V = any> {
      * 重连方法
      */
     reconnect: () => val | Promise<AxiosPromise>
+
     /**
      * get方法
      * @param url
@@ -110,7 +113,8 @@ class AxiosManager<V = any> {
      * @param headers
      * @param c
      */
-    get: (url: string, params?: V, c?: Manager, headers?: V) => Promise<AxiosPromise>
+    get<Q, D, E>(url: string, params: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+
     /**
      * post
      * @param url
@@ -118,7 +122,8 @@ class AxiosManager<V = any> {
      * @param headers
      * @param c
      */
-    post: (url: string, data: V, c?: Manager, headers?: V) => Promise<AxiosPromise>
+    post<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+
     /**
      * delete
      * @param url
@@ -126,7 +131,8 @@ class AxiosManager<V = any> {
      * @param headers
      * @param c
      */
-    delete: (url: string, data: V, c?: Manager, headers?: V) => Promise<AxiosPromise>
+    put<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+
     /**
      * put
      * @param url
@@ -134,7 +140,8 @@ class AxiosManager<V = any> {
      * @param headers
      * @param c
      */
-    put: (url: string, data: V, c?: Manager, headers?: V) => Promise<AxiosPromise>
+    delete<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+
     /**
      * patch
      * @param url
@@ -142,15 +149,14 @@ class AxiosManager<V = any> {
      * @param headers
      * @param c
      */
-    patch: (url: string, data: V, c?: Manager, headers?: V) => Promise<AxiosPromise>
+    patch<Q, D, E>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D | E>
+
     /**
      * 发起axios请求
      * @param q
      */
-    dispatch: (q: Context) => Promise<AxiosPromise>
+    dispatch<D, E>(context: Context): Promise<D | E>
 }
-
-
 
 
 export interface Extension<T = any> {
@@ -159,8 +165,8 @@ export interface Extension<T = any> {
     tryBegin?: () => void // 开始尝试重连
     maxReconnectionTimes?: number; // 最大重连数
     timeStep?: number; // 断线重连时间间隔
-    request: undefined | ((config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<T>))
-    response: undefined | ((res: any) => any | AxiosError<any>)
+    request?: (<E>(config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<E>))
+    response?: (<D, E>(res: D) => D | AxiosError<E>)
 }
 
 export interface Context extends AxiosRequestConfig {
@@ -179,8 +185,6 @@ export interface Manager {
     delay?: boolean,
     delayTime?: number
 }
-
-
 
 
 export default AxiosManager

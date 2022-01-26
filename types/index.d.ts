@@ -102,11 +102,6 @@ class AxiosManager {
     constructor(axiosConfig: AxiosRequestConfig, ext: Extension)
 
     /**
-     * 重连方法
-     */
-    reconnect: () => val | Promise<AxiosPromise>
-
-    /**
      * get方法
      * @param url
      * @param params

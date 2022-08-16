@@ -2,16 +2,40 @@
 
 ## super-axios 基于 axios 封装了断线重连，防抖提交，节流请求，以及自动取消接口功能具体使用方式请看案例：
 
-### reconnect 方法需要自己在业务逻辑response响应拦截器中使用
+|       参数          | 类型   |    默认   |   说明     |
+|  ------------      | ----  | -------- | --------     |
+| reconnectTime      | number |   1000  |  重连等待时间|
+| maxReconnectTimes  | number |    3    | 最大重连次数 |
+| delayTime         | number |    300    | 延时接口等待时间 |
 
 ```ts
-import SuperAxios from "super-axios"
-
 const services = new SuperAxios({
-    baseURL: "http://localhost:9000",
-    timeout: 3000,
+    baseURL: "http://124.221.204.219:8888",
+    timeout: 10,
+    headers: {
+        "Content-Type": "application/json"
+    },
     withCredentials: false,
+    reconnectTime: 1000,
+    maxReconnectTimes: 3,
 })
+
+services.axiosInstance.interceptors.request.use((config) => {
+    const token = "ABD123124123"
+    if (config.headers) {
+        config.headers["x-token"] = token
+    }
+    return config
+})
+services.axiosInstance.interceptors.response.use((res) => {
+    return res
+}, err => {
+    if (err.message.search("timeout") > -1) {
+        // 断线重连考虑到每个项目的业务处理方式不同，所以只封装了方法，具体触发时机需要开发者自己处理
+        return services.reconnect(services.getRequestConfig(err.config))
+    }
+})
+export default services;
 
 /**
  * 本插件把axios封装在了SuperAxios的axiosInstance属性下，保证了axios的无污染
@@ -20,9 +44,21 @@ const services = new SuperAxios({
  * delayTime:300, 这个参数用于设置延时时间，默认为300ms
  * kill 一般用于tab切换不同类型是获取的列表数据，用于自动取消上一次还未返回数据的请求
  * block 这是防抖参数，在同一接口没有返回数据之前无法发起第二次请求，一般用于form提交时
+ * reconnect 默认:true // 默认所有接口都需要重连机制，如果某些接口不需要重连，请单独将接口reconnect设置为false
  * 断线重连默认开启，不关闭
  */
+
 export default service;
+
+```
+
+|       参数          | 类型   |    默认   |   说明     |
+|  ------------      | ----  | -------- | --------     |
+| type      | string |   default delay block kill  |    delay:节流请求，kill:自动取消，block 防抖提交|
+| reconnect  | boolean |    true    | 接口是否需要重连机制 |
+| delayTime  | number |    300    | 可覆盖总设置的delayTime参数 |
+
+```ts
 
 type LoginReq = { username: string, password: string }
 
@@ -74,6 +110,7 @@ const search = (key): Promise<UserInfo[]> =>
         url: "/users/list",
         method: "get",
         type: "delay",
+        reconnect: false,
         delayTime: 500,// 默认为 300ms，可在特定接口覆盖默认参数
     });
 ```

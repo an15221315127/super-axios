@@ -4,9 +4,10 @@ import axios, {AxiosInstance, AxiosPromise, AxiosRequestConfig, Method, Canceler
 const cancelToken = axios.CancelToken
 
 interface Protocol {
+    getRequestConfig<D = any>(config: AxiosRequestConfig): RequestConfig<D>         // 通过axios请求参数来获取原请求接口所有信息
     reconnect<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>               // 重新请求
     dispatch<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>                // 请求方法
-    getHashCode<D = any>(r: RequestConfig<D>): number                               // 获取请求唯一标识
+    getHashCode<D = any>(r: AxiosRequestConfig): number                             // 获取请求唯一标识
     checkRequestExists(hashCode: number): Boolean                                   // 检测是否有存在相同请求
 }
 
@@ -192,7 +193,7 @@ class SuperAxios implements Protocol {
      * 通过请求参数及请求方法生成唯一标识
      * @param r
      */
-    public getHashCode<D = any>(r: RequestConfig<D>): number {
+    public getHashCode<D = any>(r: AxiosRequestConfig): number {
         const {url, method} = r
         const obj: RequestUniqueObject = {
             url: <string>url,
@@ -207,6 +208,14 @@ class SuperAxios implements Protocol {
             hash |= 0; // Convert to 32bit integer
         }
         return hash;
+    }
+
+    /***
+     * 通过AxiosRequestConfig获取RequestConfig
+     * @param config
+     */
+    public getRequestConfig<D = any>(config: AxiosRequestConfig): RequestConfig<D> {
+        return this.queue.get(this.getHashCode(config))!;
     }
 
 }

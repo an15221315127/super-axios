@@ -47,21 +47,6 @@ export default services;
 | delayTime  | number |    300    | 可覆盖总设置的delayTime参数 |
 
 ```ts
-
-type LoginReq = { username: string, password: string }
-
-type UserInfo = {
-    username: string
-    password: string
-    avatar: string
-    nickName: string
-}
-
-type AxiosError = {
-    message: string
-    code: number
-    reason: string[]
-}
 /**
  * 本插件把axios封装在了SuperAxios的axiosInstance属性下，保证了axios的无污染
  * type = "default" | "delay" | "block" | "kill"
@@ -78,8 +63,8 @@ type AxiosError = {
  * @param password
  * @returns Promise<data>
  */
-const login = (username, password): Promise<UserInfo> =>
-    services.dispatch<LoginReq, UserInfo>({
+const login = (username, password): AxiosPromise<UserInfo> =>
+    services.dispatch({
         data: {username, password},
         url: "/users/login",
         method: "post",
@@ -91,8 +76,8 @@ const login = (username, password): Promise<UserInfo> =>
  * @param pageSize
  * @param pageNum
  */
-const userList = (pageSize, pageNum): Promise<UserInfo[]> =>
-    services.dispatch<LoginReq, UserInfo>({
+const userList = (pageSize, pageNum): AxiosPromise<UserInfo[]> =>
+    services.dispatch({
         params: {pageSize: 1, pageNum: 10},
         url: "/users/list",
         method: "get",
@@ -102,8 +87,8 @@ const userList = (pageSize, pageNum): Promise<UserInfo[]> =>
  * 案例三：节流请求，用于模糊查询搜索接口时后置接口覆盖前置接口
  * @param key
  */
-const search = (key): Promise<UserInfo[]> =>
-    services.dispatch<LoginReq, UserInfo>({
+const search = (key): AxiosPromise<UserInfo[]> =>
+    services.dispatch({
         params: {pageSize: 1, pageNum: 10},
         url: "/users/list",
         method: "get",

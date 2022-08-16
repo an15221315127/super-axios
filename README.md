@@ -9,7 +9,7 @@
 | delayTime         | number |    300    | 延时接口等待时间 |
 
 ```ts
-import SuperAxios from "super-axios"
+import {SuperAxios} from "super-axios"
 
 const services = new SuperAxios({
     baseURL: "http://124.221.204.219:8888",

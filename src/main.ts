@@ -3,7 +3,7 @@ import axios, {AxiosInstance, AxiosPromise, AxiosRequestConfig, Method, Canceler
 
 const cancelToken = axios.CancelToken
 
-interface Protocol {
+export interface Protocol {
     getRequestConfig(config: AxiosRequestConfig): RequestConfig       // 通过axios请求参数来获取原请求接口所有信息
     reconnect<R = any>(r: RequestConfig): AxiosPromise<R>             // 重新请求
     dispatch<R = any>(r: RequestConfig): AxiosPromise<R>              // 请求方法
@@ -11,9 +11,9 @@ interface Protocol {
     checkRequestExists(hashCode: number): Boolean                     // 检测是否有存在相同请求
 }
 
-type MethodType = "default" | "delay" | "block" | "kill"
+export type MethodType = "default" | "delay" | "block" | "kill"
 
-interface RequestConfig extends AxiosRequestConfig {
+export interface RequestConfig extends AxiosRequestConfig {
     type: MethodType            // 接口类型
     reconnect: Boolean          // 是否需要重连
     hashCode?: number           // 当前请求hashCode
@@ -23,7 +23,7 @@ interface RequestConfig extends AxiosRequestConfig {
 
 }
 
-interface Config extends AxiosRequestConfig {
+export interface Config extends AxiosRequestConfig {
     queue: Map<number, RequestConfig>           // 请求队列
     waitingTime: number                         // 重连等待时间,默认1000
     maxReconnectTimes: number                   // 最大重连次数,默认为5次
@@ -37,7 +37,7 @@ interface RequestUniqueObject {
 }
 
 
-class SuperAxios implements Protocol {
+export class SuperAxios implements Protocol {
 
 
     public axiosInstance: AxiosInstance                      // axios单例对象
@@ -221,6 +221,3 @@ class SuperAxios implements Protocol {
 }
 
 
-
-
-export default SuperAxios;

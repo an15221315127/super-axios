@@ -1,0 +1,81 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn publish
+
+PATH: 
+  /usr/local/Cellar/flutter/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/Cellar/flutter/bin:/Users/anguodong/Library/Android/sdk/tools:/Users/anguodong/Library/Android/sdk/tools/bin:/Users/anguodong/Library/Android/sdk/platform-tools:/Users/anguodong/Library/Android/sdk/emulator:/Users/anguodong/.pub-cache/bin:/Users/anguodong/Library/Android/sdk/tools:/Users/anguodong/Library/Android/sdk/tools/bin:/Users/anguodong/Library/Android/sdk/platform-tools:/Users/anguodong/Library/Android/sdk/emulator:/Users/anguodong/.pub-cache/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.15.4
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:136216:13)
+      at Interface.emit (events.js:315:20)
+      at Interface._ttyWrite (readline.js:875:16)
+      at ReadStream.onkeypress (readline.js:213:10)
+      at ReadStream.emit (events.js:315:20)
+      at emitKeys (internal/readline/utils.js:345:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1144:36)
+      at ReadStream.emit (events.js:315:20)
+      at addChunk (internal/streams/readable.js:309:12)
+
+npm manifest: 
+  {
+    "name": "super-axios",
+    "version": "1.4.9",
+    "description": "一款基于axios二次封装的断线重连，防抖提交，节流请求，自动取消等功能，是一个很强大的库～",
+    "main": "lib/index.min.js",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/an15221315127/super-axios.git"
+    },
+    "homepage": "https://github.com/an15221315127/super-axios.git",
+    "bugs": {
+      "email": "2890815038@qq.com"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.15.5",
+      "@types/uglifyjs-webpack-plugin": "^1.1.0",
+      "babel-loader": "^8.2.2",
+      "clean-webpack-plugin": "^4.0.0-alpha.0",
+      "ts-loader": "^9.2.4",
+      "typescript": "^4.3.5",
+      "uglifyjs-webpack-plugin": "^2.2.0",
+      "webpack": "^5.47.1",
+      "webpack-cli": "^4.8.0"
+    },
+    "types": "./types/index.d.ts",
+    "scripts": {
+      "build": "webpack build",
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "http",
+      "axios",
+      "super-axios",
+      "xhr",
+      "防抖提交",
+      "断线重连",
+      "节流",
+      "自动取消",
+      "super"
+    ],
+    "author": "anguodong",
+    "license": "ISC",
+    "dependencies": {
+      "axios": "^0.21.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

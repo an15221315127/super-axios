@@ -28,7 +28,7 @@ export interface Config extends AxiosRequestConfig {
     reconnectTime: number                       // 重连时间间隔
 }
 
-export class SuperAxios implements Protocol {
+class SuperAxios implements Protocol {
     public axiosInstance: AxiosInstance             // axios单例对象
     private queue: Map<number, RequestConfig<any>>  // 请求队列
     private maxReconnectTimes: number               // 最大重连次数,默认为5次
@@ -50,3 +50,4 @@ export class SuperAxios implements Protocol {
 
 }
 
+export default SuperAxios;

@@ -1,17 +1,17 @@
 import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Method, Canceler} from "axios";
 
-interface Protocol {
-    getRequestConfig<D = any>(config: AxiosRequestConfig): RequestConfig<D>         // 通过axios请求参数来获取原请求接口所有信息
-    reconnect<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>               // 重新请求
-    dispatch<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>                // 请求方法
-    getHashCode<D = any>(r: AxiosRequestConfig): number                             // 获取请求唯一标识
-    checkRequestExists(hashCode: number): Boolean                                   // 检测是否有存在相同请求
+export interface Protocol {
+    getRequestConfig(config: AxiosRequestConfig): RequestConfig       // 通过axios请求参数来获取原请求接口所有信息
+    reconnect<R = any>(r: RequestConfig): AxiosPromise<R>             // 重新请求
+    dispatch<R = any>(r: RequestConfig): AxiosPromise<R>              // 请求方法
+    getHashCode(r: AxiosRequestConfig): number                        // 获取请求唯一标识
+    checkRequestExists(hashCode: number): Boolean                     // 检测是否有存在相同请求
 }
 
 export type MethodType = "default" | "delay" | "block" | "kill"
 
-export interface RequestConfig<D> extends AxiosRequestConfig {
-    type: MethodType
+export interface RequestConfig extends AxiosRequestConfig {
+    type: MethodType            // 接口类型
     reconnect: Boolean          // 是否需要重连
     hashCode?: number           // 当前请求hashCode
     delayTime: number           // 私有化延迟请求时间
@@ -20,12 +20,12 @@ export interface RequestConfig<D> extends AxiosRequestConfig {
 
 }
 
-export interface Config<D> extends AxiosRequestConfig {
-    queue: Map<string, RequestConfig<D>>    // 请求队列
-    waitingTime: number                     // 重连等待时间,默认1000
-    maxReconnectTimes: number               // 最大重连次数,默认为5次
-    delayTime: number                       // 延迟毫秒数，默认为300毫秒
-    reconnectTime: number                   // 重连时间间隔
+export interface Config extends AxiosRequestConfig {
+    queue: Map<number, RequestConfig>           // 请求队列
+    waitingTime: number                         // 重连等待时间,默认1000
+    maxReconnectTimes: number                   // 最大重连次数,默认为5次
+    delayTime: number                           // 延迟毫秒数，默认为300毫秒
+    reconnectTime: number                       // 重连时间间隔
 }
 
 export interface RequestUniqueObject {

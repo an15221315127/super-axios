@@ -1,4 +1,4 @@
-import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Method, Canceler} from "axios";
+import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Canceler} from "axios";
 
 export interface Protocol {
     getRequestConfig(config: AxiosRequestConfig): RequestConfig       // 通过axios请求参数来获取原请求接口所有信息
@@ -28,30 +28,25 @@ export interface Config extends AxiosRequestConfig {
     reconnectTime: number                       // 重连时间间隔
 }
 
-export interface RequestUniqueObject {
-    url: string,
-    method: Method,
-}
-
-class SuperAxios implements Protocol {
+export class SuperAxios implements Protocol {
     public axiosInstance: AxiosInstance             // axios单例对象
     private queue: Map<number, RequestConfig<any>>  // 请求队列
     private maxReconnectTimes: number               // 最大重连次数,默认为5次
     private delayTime: number                       // 延迟毫秒数，默认为300毫秒
     private Timer?: any                             // 延时器对象
     private reconnectTime: number                   // 重连时间间隔
-    constructor(config: Config<any>)
-
-    dispatch<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>;
-
-    reconnect<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>;
+    constructor(config: Config)
 
     checkRequestExists(hashCode: number): Boolean;
 
+    dispatch<R = any>(r: RequestConfig): AxiosPromise<R>;
 
-    getRequestConfig<D = any>(config: AxiosRequestConfig): RequestConfig<D>;
+    getHashCode(r: AxiosRequestConfig): number;
 
-    getHashCode<D = any>(r: AxiosRequestConfig): number;
+    getRequestConfig(config: AxiosRequestConfig): RequestConfig;
+
+    reconnect<R = any>(r: RequestConfig): AxiosPromise<R>;
+
+
 }
 
-export default SuperAxios

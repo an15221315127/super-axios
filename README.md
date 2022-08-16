@@ -36,20 +36,6 @@ services.axiosInstance.interceptors.response.use((res) => {
     }
 })
 export default services;
-
-/**
- * 本插件把axios封装在了SuperAxios的axiosInstance属性下，保证了axios的无污染
- * type = "default" | "delay" | "block" | "kill"
- * delay 这个参数将会使请求延时发起，如果有相同请求会覆盖，一般用于后台管理select组件远程搜索时使用
- * delayTime:300, 这个参数用于设置延时时间，默认为300ms
- * kill 一般用于tab切换不同类型是获取的列表数据，用于自动取消上一次还未返回数据的请求
- * block 这是防抖参数，在同一接口没有返回数据之前无法发起第二次请求，一般用于form提交时
- * reconnect 默认:true // 默认所有接口都需要重连机制，如果某些接口不需要重连，请单独将接口reconnect设置为false
- * 断线重连默认开启，不关闭
- */
-
-export default service;
-
 ```
 
 |       参数          | 类型   |    默认   |   说明     |
@@ -74,6 +60,16 @@ type AxiosError = {
     code: number
     reason: string[]
 }
+/**
+ * 本插件把axios封装在了SuperAxios的axiosInstance属性下，保证了axios的无污染
+ * type = "default" | "delay" | "block" | "kill"
+ * delay 这个参数将会使请求延时发起，如果有相同请求会覆盖，一般用于后台管理select组件远程搜索时使用
+ * delayTime:300, 这个参数用于设置延时时间，默认为300ms
+ * kill 一般用于tab切换不同类型是获取的列表数据，用于自动取消上一次还未返回数据的请求
+ * block 这是防抖参数，在同一接口没有返回数据之前无法发起第二次请求，一般用于form提交时
+ * reconnect 默认:true // 默认所有接口都需要重连机制，如果某些接口不需要重连，请单独将接口reconnect设置为false
+ * 断线重连默认开启，不关闭
+ */
 /**
  * 案例一 防抖提交
  * @param username
@@ -117,4 +113,4 @@ const search = (key): Promise<UserInfo[]> =>
 
 #### 欢迎大家提问或提出 bug，共同维护这个仓库
 
-#### 作者联系方式 wechat:Irm950215 qq:2890815038
+#### 作者联系方式 wechat:gda20200604 qq:2890815038

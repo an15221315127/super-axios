@@ -21,8 +21,6 @@ export interface RequestConfig extends AxiosRequestConfig {
 }
 
 export interface Config extends AxiosRequestConfig {
-    queue: Map<number, RequestConfig>           // 请求队列
-    waitingTime: number                         // 重连等待时间,默认1000
     maxReconnectTimes: number                   // 最大重连次数,默认为5次
     delayTime: number                           // 延迟毫秒数，默认为300毫秒
     reconnectTime: number                       // 重连时间间隔

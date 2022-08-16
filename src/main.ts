@@ -24,8 +24,6 @@ export interface RequestConfig extends AxiosRequestConfig {
 }
 
 export interface Config extends AxiosRequestConfig {
-    queue: Map<number, RequestConfig>           // 请求队列
-    waitingTime: number                         // 重连等待时间,默认1000
     maxReconnectTimes: number                   // 最大重连次数,默认为5次
     delayTime: number                           // 延迟毫秒数，默认为300毫秒
     reconnectTime: number                       // 重连时间间隔
@@ -40,21 +38,19 @@ interface RequestUniqueObject {
 export class SuperAxios implements Protocol {
 
 
-    public axiosInstance: AxiosInstance                      // axios单例对象
-    private queue: Map<number, RequestConfig>                // 请求队列
-    private readonly maxReconnectTimes: number = 5           // 最大重连次数,默认为5次
-    private readonly delayTime: number = 300                 // 延迟毫秒数，默认为300毫秒
-    private Timer?: any                                      // 延时器对象
-    private readonly reconnectTime: number                   // 重连时间间隔
+    public axiosInstance: AxiosInstance                                 // axios单例对象
+    private queue: Map<number, RequestConfig> = new Map()               // 请求队列
+    private readonly maxReconnectTimes: number = 5                      // 最大重连次数,默认为5次
+    private readonly delayTime: number = 300                            // 延迟毫秒数，默认为300毫秒
+    private Timer?: any                                                 // 延时器对象
+    private readonly reconnectTime: number                              // 重连时间间隔
     constructor(config: Config) {
         this.axiosInstance = axios.create(config)
         const {
-            queue = new Map(),
             maxReconnectTimes = 5,
             delayTime = 300,
             reconnectTime = 1500
         } = config
-        this.queue = queue
         this.maxReconnectTimes = maxReconnectTimes
         this.delayTime = delayTime
         this.reconnectTime = reconnectTime

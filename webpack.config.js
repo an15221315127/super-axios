@@ -3,8 +3,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const config = {
     entry: {
-        'index': [path.resolve("src/index.ts")],
-        'index.min': [path.resolve("src/index.ts")]
+        'index': [path.resolve("src/main.ts")],
+        'index.min': [path.resolve("src/main.ts")]
     },
     mode: "production",
     module: {
@@ -18,10 +18,7 @@ const config = {
             },
             {
                 loader: "ts-loader",
-                options: {
-                    appendTsxSuffixTo: [/\.vue$/],
-                    transpileOnly: true
-                }
+                exclude: /node_modules/,
             }
         ]
     },

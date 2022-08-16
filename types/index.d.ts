@@ -1,184 +1,53 @@
-import {AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, Canceler, Method, AxiosPromise} from "axios"
+import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Method, Canceler} from "axios";
 
-
-export {
-    AxiosInstance,
-    AxiosResponse,
-    AxiosRequestConfig,
-    AxiosError,
-    Canceler,
-    Method,
-    AxiosPromise
+export interface Protocol {
+    reconnect<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>               // 重新请求
+    dispatch<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>    // 请求方法
+    getHashCode<D = any>(r: RequestConfig<D>): number                   // 获取请求唯一标识
+    checkRequestExists(hashCode: number): Boolean                       // 检测是否有存在相同请求
 }
 
-class AxiosManager {
-    /**
-     * 请求队列
-     */
-    cancelMap: Map<string, Context>
-    /**
-     * 需要防止重复的请求队列
-     */
-    shakeQueue: Map<string, Context>
-    tryingMap: Map<string, Context>
-    /**
-     *断线重连时间间隔
-     */
-    timeStep: number
-    /**
-     * 自动尝试重连
-     */
-    autoAttempt: boolean
+export type MethodType = "default" | "delay" | "block" | "kill"
 
-    /**
-     * 最大重连数
-     */
-    maxReconnectionTimes: number
-    /**
-     * 延时时间
-     */
-    delayTime: number
-    /**
-     * 请求拦截器
-     * @param config
-     */
-    request?: (<E>(config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<E>))
+export interface RequestConfig<D> extends AxiosRequestConfig {
+    type: MethodType
+    reconnect: Boolean          // 是否需要重连
+    hashCode?: number           // 当前请求hashCode
+    delayTime: number           // 私有化延迟请求时间
+    cancelHandle?: Canceler     // 取消请求回调方法
+    reconnectTimes: number      // 当前重连次数
 
-
-    /**
-     *  响应拦截器
-     * @param value
-     */
-    response?: (<D, E>(res: D) => D | AxiosError<E>)
-    /**
-     * 开始尝试重连
-     */
-    tryBegin: () => void
-    /**
-     * 重连成功的回调
-     */
-    trySuccess: () => void
-    /**
-     * 重连成功的回调
-     */
-    tryFail: () => void
-
-    /**
-     *延时器对象
-     */
-    Timer?: NodeJS.Timeout
-    /**
-     * Axios实例
-     */
-    Http: AxiosInstance
-
-    /**
-     *  取消请求回调方法
-     */
-    cancel: Canceler
-    /**
-     * 是否延时
-     */
-    delay: boolean
-    /**
-     * 是否需要自动取消
-     */
-    needCancel: boolean
-    /**
-     * 是否需要防抖
-     */
-    shake: boolean
-    /**
-     *  当前请求上下文
-     */
-    context: Context
-
-
-    /**
-     * 构造方法
-     * @param c
-     * @param ext
-     */
-    constructor(axiosConfig: AxiosRequestConfig, ext: Extension)
-
-    /**
-     * get方法
-     * @param url
-     * @param params
-     * @param headers
-     * @param c
-     */
-    get<Q, D>(url: string, params: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
-
-    /**
-     * post
-     * @param url
-     * @param data
-     * @param headers
-     * @param c
-     */
-    post<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
-
-    /**
-     * delete
-     * @param url
-     * @param data
-     * @param headers
-     * @param c
-     */
-    put<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
-
-    /**
-     * put
-     * @param url
-     * @param data
-     * @param headers
-     * @param c
-     */
-    delete<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
-
-    /**
-     * patch
-     * @param url
-     * @param data
-     * @param headers
-     * @param c
-     */
-    patch<Q, D>(url: string, data: Q, c?: Manager, headers?: { [key: string]: any }): Promise<D>
-
-    /**
-     * 发起axios请求
-     * @param q
-     */
-    dispatch<D>(context: Context): Promise<D>
 }
 
-
-export interface Extension<T = any> {
-    trySuccess?: () => void // 重连成功的回调
-    tryFail?: () => void// 重连失败的回调
-    tryBegin?: () => void // 开始尝试重连
-    maxReconnectionTimes?: number; // 最大重连数
-    timeStep?: number; // 断线重连时间间隔
-    request?: (<E>(config: AxiosRequestConfig) => (AxiosRequestConfig | AxiosError<E>))
-    response?: (<D, E>(res: D) => D | AxiosError<E>)
+export interface Config<D> extends AxiosRequestConfig {
+    queue: Map<string, RequestConfig<D>>    // 请求队列
+    waitingTime: number                     // 重连等待时间,默认1000
+    maxReconnectTimes: number               // 最大重连次数,默认为5次
+    delayTime: number                       // 延迟毫秒数，默认为300毫秒
+    reconnectTime: number                   // 重连时间间隔
 }
 
-export interface Context extends AxiosRequestConfig {
-    cancel?: Canceler | null,// 可手动取消axios请求的回调方法
-    shake?: boolean,
-    needCancel?: boolean,
-    delay?: boolean,
-    delayTime?: number
-    isDelay?: boolean
-    autoCounts?: number
+export interface RequestUniqueObject {
+    url: string,
+    method: Method,
 }
 
-export interface Manager {
-    shake?: boolean,
-    needCancel?: boolean,
-    delay?: boolean,
-    delayTime?: number
+class SuperAxios implements Protocol {
+    public axiosInstance: AxiosInstance             // axios单例对象
+    private queue: Map<number, RequestConfig<any>>  // 请求队列
+    private maxReconnectTimes: number               // 最大重连次数,默认为5次
+    private delayTime: number                       // 延迟毫秒数，默认为300毫秒
+    private Timer?: any                             // 延时器对象
+    private reconnectTime: number                   // 重连时间间隔
+    constructor(config: Config<any>)
+
+    dispatch<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>;
+
+    reconnect<D = any, R = any>(r: RequestConfig<D>): AxiosPromise<R>;
+
+    checkRequestExists(hashCode: number): Boolean;
+
+    getHashCode<D = any>(r: RequestConfig<D>): number;
 }
 
-export default AxiosManager
+export default SuperAxios

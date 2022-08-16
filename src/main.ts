@@ -37,7 +37,7 @@ interface RequestUniqueObject {
 }
 
 
-class SuperAxios implements Protocol {
+export class SuperAxios implements Protocol {
 
 
     public axiosInstance: AxiosInstance                      // axios单例对象
@@ -220,8 +220,6 @@ class SuperAxios implements Protocol {
 
 }
 
-
-export default SuperAxios;
 
 
 

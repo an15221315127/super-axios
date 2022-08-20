@@ -1,11 +1,11 @@
-import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Canceler} from "axios";
+import {AxiosInstance, AxiosPromise, AxiosRequestConfig, Canceler, AxiosResponse} from "axios";
 
 export interface Protocol {
-    getRequestConfig(config: AxiosRequestConfig): RequestConfig       // 通过axios请求参数来获取原请求接口所有信息
-    reconnect<R = any>(r: RequestConfig): AxiosPromise<R>             // 重新请求
-    dispatch<R = any>(r: RequestConfig): AxiosPromise<R>              // 请求方法
-    getHashCode(r: AxiosRequestConfig): number                        // 获取请求唯一标识
-    checkRequestExists(hashCode: number): Boolean                     // 检测是否有存在相同请求
+    getRequestConfig(config: AxiosRequestConfig): RequestConfig         // 通过axios请求参数来获取原请求接口所有信息
+    reconnect<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>> // 重新请求
+    dispatch<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>>  // 请求方法
+    getHashCode(r: AxiosRequestConfig): number                          // 获取请求唯一标识
+    checkRequestExists(hashCode: number): Boolean                       // 检测是否有存在相同请求
 }
 
 export type MethodType = "default" | "delay" | "block" | "kill"
@@ -37,13 +37,13 @@ export class SuperAxios implements Protocol {
 
     checkRequestExists(hashCode: number): Boolean;
 
-    dispatch<R = any>(r: RequestConfig): AxiosPromise<R>;
+    dispatch<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>>;
 
     getHashCode(r: AxiosRequestConfig): number;
 
     getRequestConfig(config: AxiosRequestConfig): RequestConfig;
 
-    reconnect<R = any>(r: RequestConfig): AxiosPromise<R>;
+    reconnect<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>>;
 
 
 }

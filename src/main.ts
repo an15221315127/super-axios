@@ -22,19 +22,18 @@ export interface Protocol {
 export type MethodType = "default" | "delay" | "block" | "kill"
 
 export interface RequestConfig extends AxiosRequestConfig {
-    type: MethodType            // 接口类型
-    reconnect: Boolean          // 是否需要重连
-    hashCode?: number           // 当前请求hashCode
-    delayTime: number           // 私有化延迟请求时间
-    cancelHandle?: Canceler     // 取消请求回调方法
-    reconnectTimes: number      // 当前重连次数
-
+    type?: MethodType            // 接口类型
+    reconnect?: Boolean          // 是否需要重连
+    hashCode?: number            // 当前请求hashCode
+    delayTime?: number           // 私有化延迟请求时间
+    cancelHandle?: Canceler      // 取消请求回调方法
+    reconnectTimes?: number      // 当前重连次数
 }
 
 export interface Config extends AxiosRequestConfig {
-    maxReconnectTimes: number                   // 最大重连次数,默认为5次
-    delayTime: number                           // 延迟毫秒数，默认为300毫秒
-    reconnectTime: number                       // 重连时间间隔
+    maxReconnectTimes?: number   // 最大重连次数,默认为5次
+    delayTime?: number           // 延迟毫秒数，默认为300毫秒
+    reconnectTime?: number       // 重连时间间隔
 }
 
 interface RequestUniqueObject {
@@ -70,9 +69,9 @@ export class SuperAxios implements Protocol {
      * @param r
      */
     public reconnect<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>> {
-        if (r.reconnectTimes < this.maxReconnectTimes) {
+        if (r.reconnectTimes! < this.maxReconnectTimes) {
             this.queue.delete(this.getHashCode(r))
-            r.reconnectTimes++
+            r.reconnectTimes!++
             const Reconnection = new Promise<void>((resolve) => {
                 setTimeout(() => {
                     resolve();
@@ -91,11 +90,7 @@ export class SuperAxios implements Protocol {
      * @return AxiosPromise<R>
      * @private
      */
-    dispatch<R = any>(r: RequestConfig = {
-        type: "default", reconnect: true,
-        delayTime: 300,
-        reconnectTimes: 0,
-    }): Promise<R | AxiosResponse<R>> {
+    dispatch<R = any>(r: RequestConfig): Promise<R | AxiosResponse<R>> {
         if (!r.reconnectTimes) {
             r.reconnectTimes = 0
         }
